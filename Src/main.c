@@ -39,14 +39,16 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "stm32f7xx_hal.h"
-
+#include "arm_math.h"
+#include "math.h"
+#include <stdio.h>
 /* USER CODE BEGIN Includes */
 
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
 
-USART_HandleTypeDef husart1;
+UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
@@ -56,10 +58,35 @@ USART_HandleTypeDef husart1;
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
-static void MX_USART1_Init(void);
 
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
+void log_init(void)
+{
+    huart1.Instance        = USARTx;
+
+    huart1.Init.BaudRate   = 115200;
+    huart1.Init.WordLength = UART_WORDLENGTH_8B;
+    huart1.Init.StopBits   = UART_STOPBITS_1;
+    huart1.Init.Parity     = UART_PARITY_NONE;
+    huart1.Init.HwFlowCtl  = UART_HWCONTROL_NONE;
+    huart1.Init.Mode       = UART_MODE_TX_RX;
+    huart1.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT; 
+    if(HAL_UART_DeInit(&huart1) != HAL_OK)
+    {
+        // Error_Handler();
+    }  
+    if(HAL_UART_Init(&huart1) != HAL_OK)
+    {
+        // Error_Handler();
+    }
+}
+
+int _write(int fd, char * str, int len)
+{
+    HAL_UART_Transmit(&huart1, (uint8_t*)str, len , 100);
+    return len;
+}
 
 /* USER CODE END PFP */
 
@@ -96,7 +123,26 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_USART1_Init();
+  log_init();
+
+  printf("run here babee!!\r\n");
+  float32_t f_input_cmsis_dsp = 2;
+  float32_t f_result_cmsis_dsp;
+  
+  float f_input = 2;
+  float f_result;
+  
+  /* Using CMSIS-DSP library */
+  arm_sqrt_f32(f_input_cmsis_dsp,&f_result_cmsis_dsp);
+  printf("f1: %f\r\n",f_result_cmsis_dsp);
+  
+  /* Standard math function */
+  f_result = sqrt(f_input);
+  printf("f2: %f\r\n",f_result);
+
+
+  float f3 = 10.3535 / 3;
+  printf("f3: %.2f\r\n", f3);
   /* USER CODE BEGIN 2 */
 
   /* USER CODE END 2 */
@@ -176,25 +222,6 @@ void SystemClock_Config(void)
   HAL_NVIC_SetPriority(SysTick_IRQn, 0, 0);
 }
 
-/* USART1 init function */
-static void MX_USART1_Init(void)
-{
-
-  husart1.Instance = USART1;
-  husart1.Init.BaudRate = 115200;
-  husart1.Init.WordLength = USART_WORDLENGTH_8B;
-  husart1.Init.StopBits = USART_STOPBITS_1;
-  husart1.Init.Parity = USART_PARITY_NONE;
-  husart1.Init.Mode = USART_MODE_TX_RX;
-  husart1.Init.CLKPolarity = USART_POLARITY_LOW;
-  husart1.Init.CLKPhase = USART_PHASE_1EDGE;
-  husart1.Init.CLKLastBit = USART_LASTBIT_DISABLE;
-  if (HAL_USART_Init(&husart1) != HAL_OK)
-  {
-    _Error_Handler(__FILE__, __LINE__);
-  }
-
-}
 
 /** Pinout Configuration
 */
