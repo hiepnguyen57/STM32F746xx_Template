@@ -1,10 +1,15 @@
 /**
   ******************************************************************************
-  * @file    stm32f7xx_it.h
-  * @brief   This file contains the headers of the interrupt handlers.
+  * @file    ts3510.h
+  * @author  MCD Application Team
+  * @version V1.0.1
+  * @date    02-December-2014
+  * @brief   This file contains all the functions prototypes for the
+  *          ts3510.c IO expander driver.
   ******************************************************************************
+  * @attention
   *
-  * COPYRIGHT(c) 2018 STMicroelectronics
+  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
   *
   * Redistribution and use in source and binary forms, with or without modification,
   * are permitted provided that the following conditions are met:
@@ -29,43 +34,108 @@
   * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   *
   ******************************************************************************
-  */
+  */ 
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __STM32F7xx_IT_H
-#define __STM32F7xx_IT_H
+#ifndef __TS3510_H
+#define __TS3510_H
 
 #ifdef __cplusplus
  extern "C" {
-#endif 
-
+#endif   
+   
 /* Includes ------------------------------------------------------------------*/
-#include "stm32f7xx_hal.h"
-#include "main.h"
+#include "../Common/ts.h"
+
+/** @addtogroup BSP
+  * @{
+  */ 
+
+/** @addtogroup Component
+  * @{
+  */
+    
+/** @defgroup TS3510
+  * @{
+  */    
+
 /* Exported types ------------------------------------------------------------*/
+
+/** @defgroup TS3510_Exported_Types
+  * @{
+  */ 
+
 /* Exported constants --------------------------------------------------------*/
+  
+/** @defgroup TS3510_Exported_Constants
+  * @{
+  */ 
+
+/*  */   
+#define TS3510_READ_BLOCK_REG                     0x8A
+#define TS3510_SEND_CMD_REG                       0x00
+#define TS3510_READ_CMD                           0x81  
+#define TS3510_WRITE_CMD                          0x08     
+
+
+/**
+  * @}
+  */ 
+  
 /* Exported macro ------------------------------------------------------------*/
-/* Exported functions ------------------------------------------------------- */
+   
+/** @defgroup ts3510_Exported_Macros
+  * @{
+  */ 
 
-void NMI_Handler(void);
-void HardFault_Handler(void);
-void MemManage_Handler(void);
-void BusFault_Handler(void);
-void UsageFault_Handler(void);
-void SVC_Handler(void);
-void DebugMon_Handler(void);
-void PendSV_Handler(void);
-void SysTick_Handler(void);
+/* Exported functions --------------------------------------------------------*/
+  
+/** @defgroup ts3510_Exported_Functions
+  * @{
+  */
 
-void I2Cx_MASTER_DMA_RX_IRQHandler(void);
-void I2Cx_MASTER_DMA_TX_IRQHandler(void);
-void I2Cx_MASTER_EV_IRQHandler(void);
-void I2Cx_MASTER_ER_IRQHandler(void);
-void USARTx_IRQHandler(void);
+/** 
+  * @brief ts3510 Control functions
+  */
+void     ts3510_Init(uint16_t DeviceAddr);
+void     ts3510_Reset(uint16_t DeviceAddr);
+uint16_t ts3510_ReadID(uint16_t DeviceAddr);
+void     ts3510_TS_Start(uint16_t DeviceAddr);
+uint8_t  ts3510_TS_DetectTouch(uint16_t DeviceAddr);
+void     ts3510_TS_GetXY(uint16_t DeviceAddr, uint16_t *X, uint16_t *Y);
+void     ts3510_TS_EnableIT(uint16_t DeviceAddr);
+void     ts3510_TS_DisableIT(uint16_t DeviceAddr);
+uint8_t  ts3510_TS_ITStatus (uint16_t DeviceAddr);
+void     ts3510_TS_ClearIT (uint16_t DeviceAddr);
+
+void     IOE_Init(void);
+void     IOE_Delay(uint32_t delay);
+uint8_t  IOE_Read(uint8_t addr, uint8_t reg);
+uint16_t IOE_ReadMultiple(uint8_t addr, uint8_t reg, uint8_t *buffer, uint16_t length);
+void     IOE_WriteMultiple(uint8_t addr, uint8_t reg, uint8_t *buffer, uint16_t length);
+
+/* Touch screen driver structure */
+extern TS_DrvTypeDef ts3510_ts_drv;
+
 #ifdef __cplusplus
 }
 #endif
+#endif /* __TS3510_H */
 
-#endif /* __STM32F7xx_IT_H */
 
+/**
+  * @}
+  */ 
+
+/**
+  * @}
+  */
+
+/**
+  * @}
+  */ 
+
+/**
+  * @}
+  */       
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

@@ -38,62 +38,126 @@
   */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "stm32f7xx_hal.h"
 #include "arm_math.h"
 #include "math.h"
 #include <stdio.h>
+#include "stm32f7xx_it.h"
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
 /* USER CODE BEGIN Includes */
 
 /* USER CODE END Includes */
-
+/* Private define ------------------------------------------------------------*/
+#define I2CX_TIMING             0x40912732 //0x40912732 //0x00303D5D; 0x00A0689A
+#define I2C_ADDRESS 			0xD0
 /* Private variables ---------------------------------------------------------*/
 
 UART_HandleTypeDef huart1;
-
+I2C_HandleTypeDef hi2c1;
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
+/* Buffer used for transmission */
+uint8_t aTxBuffer[] = " ****I2C_TwoBoards communication based on Polling****  ****I2C_TwoBoards communication based on Polling****  ****I2C_TwoBoards communication based on Polling**** ";
 
+/* Buffer used for reception */
+uint8_t aRxBuffer[RXBUFFERSIZE];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
-static void MX_GPIO_Init(void);
+//void PB14_GENERATE_PULSE(void);
 
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
 void log_init(void)
 {
-    huart1.Instance        = USARTx;
+	huart1.Instance        = USARTx;
 
-    huart1.Init.BaudRate   = 115200;
-    huart1.Init.WordLength = UART_WORDLENGTH_8B;
-    huart1.Init.StopBits   = UART_STOPBITS_1;
-    huart1.Init.Parity     = UART_PARITY_NONE;
-    huart1.Init.HwFlowCtl  = UART_HWCONTROL_NONE;
-    huart1.Init.Mode       = UART_MODE_TX_RX;
-    huart1.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT; 
-    if(HAL_UART_DeInit(&huart1) != HAL_OK)
-    {
-        // Error_Handler();
-    }  
-    if(HAL_UART_Init(&huart1) != HAL_OK)
-    {
-        // Error_Handler();
-    }
+	huart1.Init.BaudRate   = 115200;
+	huart1.Init.WordLength = UART_WORDLENGTH_8B;
+	huart1.Init.StopBits   = UART_STOPBITS_1;
+	huart1.Init.Parity     = UART_PARITY_NONE;
+	huart1.Init.HwFlowCtl  = UART_HWCONTROL_NONE;
+	huart1.Init.Mode       = UART_MODE_TX_RX;
+	huart1.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT; 
+	if(HAL_UART_DeInit(&huart1) != HAL_OK)
+	{
+		// Error_Handler();
+	}  
+	if(HAL_UART_Init(&huart1) != HAL_OK)
+	{
+		// Error_Handler();
+	}
 }
 
 int _write(int fd, char * str, int len)
 {
-    HAL_UART_Transmit(&huart1, (uint8_t*)str, len , 100);
-    return len;
+	HAL_UART_Transmit(&huart1, (uint8_t*)str, len , 100);
+	return len;
 }
 
-/* USER CODE END PFP */
+/**
+  * @brief  This function configure I2C1 bus.
+  * @param  None
+  * @retval None
+  */
+void I2C1_Init(void)
+{
+	/*##Configure the I2C peripheral ######################################*/
+	hi2c1.Instance              = I2Cx_MASTER;
+	hi2c1.Init.Timing           = I2CX_TIMING;
+	hi2c1.Init.OwnAddress1      = I2C_ADDRESS;
+//	hi2c1.Init.OwnAddress2     = 0xFF;
+	hi2c1.Init.AddressingMode   = I2C_ADDRESSINGMODE_7BIT;
+	hi2c1.Init.DualAddressMode  = I2C_DUALADDRESS_DISABLE;
+	hi2c1.Init.GeneralCallMode  = I2C_GENERALCALL_DISABLE;
+	hi2c1.Init.NoStretchMode    = I2C_NOSTRETCH_DISABLE;
 
-/* USER CODE BEGIN 0 */
+	if(HAL_I2C_Init(&hi2c1) != HAL_OK)
+	{
+		/* Initialization Error */
+		_Error_Handler(__FILE__, __LINE__);
+	}
 
-/* USER CODE END 0 */
+	/* Enable the Analog I2C Filter */
+	HAL_I2CEx_ConfigAnalogFilter(&hi2c1, I2C_ANALOGFILTER_ENABLE);
+}
 
+void BB_GPIO_Init(void)
+{
+
+	GPIO_InitTypeDef	GPIO_Init;
+
+	/* GPIO Ports Clock Enable */
+	__HAL_RCC_GPIOI_CLK_ENABLE();
+	__HAL_RCC_GPIOB_CLK_ENABLE();
+	__HAL_RCC_GPIOA_CLK_ENABLE();
+
+	//Configure PI1 Pin as input floating
+	GPIO_Init.Pin       = GPIO_PIN_1;
+	GPIO_Init.Mode      = GPIO_MODE_IT_FALLING;
+	GPIO_Init.Pull      = GPIO_NOPULL;
+ 	HAL_GPIO_Init(GPIOI, &GPIO_Init);
+
+ 	HAL_NVIC_SetPriority(EXTI1_IRQn, 2, 0);
+ 	HAL_NVIC_EnableIRQ(EXTI1_IRQn);
+
+ 	//Configure PB14 Pin as ouput 
+ 	GPIO_Init.Pin = GPIO_PIN_14;
+ 	GPIO_Init.Mode = GPIO_MODE_OUTPUT_PP;
+ 	GPIO_Init.Pull = GPIO_PULLUP;
+ 	GPIO_Init.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+ 	HAL_GPIO_Init(GPIOB, &GPIO_Init);
+}
+
+void PB14_GENERATE_PULSE(void)
+{
+	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_14, GPIO_PIN_SET);
+
+}
 /**
   * @brief  The application entry point.
   *
@@ -101,64 +165,28 @@ int _write(int fd, char * str, int len)
   */
 int main(void)
 {
-  /* USER CODE BEGIN 1 */
+ 	/* Reset of all peripherals, Initializes the Flash interface and the Systick. */
+ 	HAL_Init();
 
-  /* USER CODE END 1 */
+ 	/* Configure the system clock */
+ 	SystemClock_Config();
 
-  /* MCU Configuration----------------------------------------------------------*/
+	/* Configure LED1 */
+	BSP_LED_Init(LED1);
+	/* Configure User push-button button */
+	BSP_PB_Init(BUTTON_KEY, BUTTON_MODE_EXTI);
+	/* USER CODE END SysInit */
 
-  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-  HAL_Init();
+	/* Initialize all configured peripherals */
+	log_init();
+	I2C1_Init();
+	BB_GPIO_Init();
 
-  /* USER CODE BEGIN Init */
+	printf("RESET FIRMWARE\r\n");
+	while (1)
+	{
 
-  /* USER CODE END Init */
-
-  /* Configure the system clock */
-  SystemClock_Config();
-
-  /* USER CODE BEGIN SysInit */
-
-  /* USER CODE END SysInit */
-
-  /* Initialize all configured peripherals */
-  MX_GPIO_Init();
-  log_init();
-
-  printf("run here babee!!\r\n");
-  float32_t f_input_cmsis_dsp = 2;
-  float32_t f_result_cmsis_dsp;
-  
-  float f_input = 2;
-  float f_result;
-  
-  /* Using CMSIS-DSP library */
-  arm_sqrt_f32(f_input_cmsis_dsp,&f_result_cmsis_dsp);
-  printf("f1: %f\r\n",f_result_cmsis_dsp);
-  
-  /* Standard math function */
-  f_result = sqrt(f_input);
-  printf("f2: %f\r\n",f_result);
-
-
-  float f3 = 10.3535 / 3;
-  printf("f3: %.2f\r\n", f3);
-  /* USER CODE BEGIN 2 */
-
-  /* USER CODE END 2 */
-
-  /* Infinite loop */
-  /* USER CODE BEGIN WHILE */
-  while (1)
-  {
-
-  /* USER CODE END WHILE */
-
-  /* USER CODE BEGIN 3 */
-
-  }
-  /* USER CODE END 3 */
-
+	}
 }
 
 /**
@@ -167,77 +195,100 @@ int main(void)
   */
 void SystemClock_Config(void)
 {
-
-  RCC_OscInitTypeDef RCC_OscInitStruct;
   RCC_ClkInitTypeDef RCC_ClkInitStruct;
-  RCC_PeriphCLKInitTypeDef PeriphClkInitStruct;
+  RCC_OscInitTypeDef RCC_OscInitStruct;
+  HAL_StatusTypeDef ret = HAL_OK;
 
-    /**Configure the main internal regulator output voltage 
-    */
-  __HAL_RCC_PWR_CLK_ENABLE();
-
-  __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE3);
-
-    /**Initializes the CPU, AHB and APB busses clocks 
-    */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
-  RCC_OscInitStruct.HSIState = RCC_HSI_ON;
-  RCC_OscInitStruct.HSICalibrationValue = 16;
-  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
-  if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
+  /* Enable HSE Oscillator and activate PLL with HSE as source */
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
+  RCC_OscInitStruct.HSEState = RCC_HSE_ON;
+  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
+  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
+  RCC_OscInitStruct.PLL.PLLM = 25;
+  RCC_OscInitStruct.PLL.PLLN = 432;
+  RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
+  RCC_OscInitStruct.PLL.PLLQ = 9;
+  
+  ret = HAL_RCC_OscConfig(&RCC_OscInitStruct);
+  if(ret != HAL_OK)
   {
-    _Error_Handler(__FILE__, __LINE__);
+	while(1) { ; }
   }
-
-    /**Initializes the CPU, AHB and APB busses clocks 
-    */
-  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
-                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
-  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSI;
+  
+  /* Activate the OverDrive to reach the 216 MHz Frequency */  
+  ret = HAL_PWREx_EnableOverDrive();
+  if(ret != HAL_OK)
+  {
+	while(1) { ; }
+  }
+  
+  /* Select PLL as system clock source and configure the HCLK, PCLK1 and PCLK2 clocks dividers */
+  RCC_ClkInitStruct.ClockType = (RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2);
+  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
-  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
-  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
-
-  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_0) != HAL_OK)
+  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;  
+  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2; 
+  
+  ret = HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_7);
+  if(ret != HAL_OK)
   {
-    _Error_Handler(__FILE__, __LINE__);
-  }
-
-  PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_USART1;
-  PeriphClkInitStruct.Usart1ClockSelection = RCC_USART1CLKSOURCE_PCLK2;
-  if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
-  {
-    _Error_Handler(__FILE__, __LINE__);
-  }
-
-    /**Configure the Systick interrupt time 
-    */
-  HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq()/1000);
-
-    /**Configure the Systick 
-    */
-  HAL_SYSTICK_CLKSourceConfig(SYSTICK_CLKSOURCE_HCLK);
-
-  /* SysTick_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(SysTick_IRQn, 0, 0);
+	while(1) { ; }
+  }  
 }
 
 
-/** Pinout Configuration
-*/
-static void MX_GPIO_Init(void)
+/**
+  * @brief  I2C error callbacks.
+  * @param  I2cHandle: I2C handle
+  * @note   This example shows a simple way to report transfer error, and you can
+  *         add your own implementation.
+  * @retval None
+  */
+void HAL_I2C_ErrorCallback(I2C_HandleTypeDef *I2cHandle)
 {
-
-  /* GPIO Ports Clock Enable */
-  __HAL_RCC_GPIOB_CLK_ENABLE();
-  __HAL_RCC_GPIOA_CLK_ENABLE();
-
+  /** Error_Handler() function is called when error occurs.
+	* 1- When Slave don't acknowledge it's address, Master restarts communication.
+	* 2- When Master don't acknowledge the last data transferred, Slave don't care in this example.
+	*/
+  if (HAL_I2C_GetError(I2cHandle) != HAL_I2C_ERROR_AF)
+  {
+	Error_Handler();
+  }
 }
 
-/* USER CODE BEGIN 4 */
+void EXTI15_10_IRQHandler(void)
+{
+	//if button pressed
+	if(__HAL_GPIO_EXTI_GET_IT(GPIO_PIN_11) != RESET)
+	{
+		printf("SEND I2C Data to BBB \r\n");
+		PB14_GENERATE_PULSE();
 
-/* USER CODE END 4 */
+		aTxBuffer[0] = 0x04;
+		aTxBuffer[1] = 0x05;
+		if(HAL_I2C_Slave_Transmit(&hi2c1, (uint8_t*)aTxBuffer, 2, 10000)!= HAL_OK)
+		{
+ 			/* Transfer error in transmission process */
+ 			printf("error transfer\r\n");
+		}
+	}
+	
+	__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_11);
+}
 
+void EXTI1_IRQHandler(void)
+{
+	//if button pressed
+	if(__HAL_GPIO_EXTI_GET_IT(GPIO_PIN_1) != RESET)
+	{
+		printf("Receive I2C Data from BBB\r\n");
+		if(HAL_I2C_Slave_Receive(&hi2c1, (uint8_t *)aRxBuffer, 2, 10000) == HAL_OK) {
+				printf("%#x\r\n", aRxBuffer[0]);
+				printf("%#x\r\n", aRxBuffer[1]);
+		}
+	}
+	__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_1);
+}
 /**
   * @brief  This function is executed in case of error occurrence.
   * @param  file: The file name as string.
@@ -266,7 +317,7 @@ void assert_failed(uint8_t* file, uint32_t line)
 { 
   /* USER CODE BEGIN 6 */
   /* User can add his own implementation to report the file name and line number,
-     tex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
+	 tex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
   /* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */

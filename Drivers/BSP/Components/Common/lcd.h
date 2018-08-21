@@ -1,10 +1,14 @@
 /**
   ******************************************************************************
-  * @file    stm32f7xx_it.h
-  * @brief   This file contains the headers of the interrupt handlers.
+  * @file    lcd.h
+  * @author  MCD Application Team
+  * @version V4.0.0
+  * @date    22-June-2015
+  * @brief   This file contains all the functions prototypes for the LCD driver.   
   ******************************************************************************
+  * @attention
   *
-  * COPYRIGHT(c) 2018 STMicroelectronics
+  * <h2><center>&copy; COPYRIGHT(c) 2015 STMicroelectronics</center></h2>
   *
   * Redistribution and use in source and binary forms, with or without modification,
   * are permitted provided that the following conditions are met:
@@ -29,43 +33,82 @@
   * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   *
   ******************************************************************************
-  */
+  */ 
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __STM32F7xx_IT_H
-#define __STM32F7xx_IT_H
+#ifndef __LCD_H
+#define __LCD_H
 
 #ifdef __cplusplus
  extern "C" {
 #endif 
 
 /* Includes ------------------------------------------------------------------*/
-#include "stm32f7xx_hal.h"
-#include "main.h"
-/* Exported types ------------------------------------------------------------*/
-/* Exported constants --------------------------------------------------------*/
-/* Exported macro ------------------------------------------------------------*/
-/* Exported functions ------------------------------------------------------- */
+#include <stdint.h>
+   
+/** @addtogroup BSP
+  * @{
+  */
 
-void NMI_Handler(void);
-void HardFault_Handler(void);
-void MemManage_Handler(void);
-void BusFault_Handler(void);
-void UsageFault_Handler(void);
-void SVC_Handler(void);
-void DebugMon_Handler(void);
-void PendSV_Handler(void);
-void SysTick_Handler(void);
+/** @addtogroup Components
+  * @{
+  */
 
-void I2Cx_MASTER_DMA_RX_IRQHandler(void);
-void I2Cx_MASTER_DMA_TX_IRQHandler(void);
-void I2Cx_MASTER_EV_IRQHandler(void);
-void I2Cx_MASTER_ER_IRQHandler(void);
-void USARTx_IRQHandler(void);
+/** @addtogroup LCD
+  * @{
+  */
+ 
+/** @defgroup LCD_Exported_Types
+  * @{
+  */
+
+/** @defgroup LCD_Driver_structure  LCD Driver structure
+  * @{
+  */
+typedef struct
+{
+  void     (*Init)(void);
+  uint16_t (*ReadID)(void);
+  void     (*DisplayOn)(void);
+  void     (*DisplayOff)(void);
+  void     (*SetCursor)(uint16_t, uint16_t);
+  void     (*WritePixel)(uint16_t, uint16_t, uint16_t);
+  uint16_t (*ReadPixel)(uint16_t, uint16_t);
+  
+   /* Optimized operation */
+  void     (*SetDisplayWindow)(uint16_t, uint16_t, uint16_t, uint16_t);
+  void     (*DrawHLine)(uint16_t, uint16_t, uint16_t, uint16_t);
+  void     (*DrawVLine)(uint16_t, uint16_t, uint16_t, uint16_t);
+  
+  uint16_t (*GetLcdPixelWidth)(void);
+  uint16_t (*GetLcdPixelHeight)(void);
+  void     (*DrawBitmap)(uint16_t, uint16_t, uint8_t*);
+  void     (*DrawRGBImage)(uint16_t, uint16_t, uint16_t, uint16_t, uint8_t*);
+}LCD_DrvTypeDef;    
+/**
+  * @}
+  */
+
+/**
+  * @}
+  */
+
+/**
+  * @}
+  */
+
+/**
+  * @}
+  */
+
+/**
+  * @}
+  */
+
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* __STM32F7xx_IT_H */
+#endif /* __LCD_H */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

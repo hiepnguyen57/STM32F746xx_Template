@@ -1,10 +1,15 @@
 /**
   ******************************************************************************
-  * @file    stm32f7xx_it.h
-  * @brief   This file contains the headers of the interrupt handlers.
+  * @file    rk043fn48h.h
+  * @author  MCD Application Team
+  * @version V1.0.0
+  * @date    25-June-2015
+  * @brief   This file contains all the constants parameters for the RK043FN48H-CT672B
+  *          LCD component.
   ******************************************************************************
+  * @attention
   *
-  * COPYRIGHT(c) 2018 STMicroelectronics
+  * <h2><center>&copy; COPYRIGHT(c) 2015 STMicroelectronics</center></h2>
   *
   * Redistribution and use in source and binary forms, with or without modification,
   * are permitted provided that the following conditions are met:
@@ -29,43 +34,88 @@
   * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   *
   ******************************************************************************
-  */
+  */ 
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __STM32F7xx_IT_H
-#define __STM32F7xx_IT_H
+#ifndef __RK043FN48H_H
+#define __RK043FN48H_H
 
 #ifdef __cplusplus
  extern "C" {
 #endif 
 
-/* Includes ------------------------------------------------------------------*/
-#include "stm32f7xx_hal.h"
-#include "main.h"
-/* Exported types ------------------------------------------------------------*/
-/* Exported constants --------------------------------------------------------*/
-/* Exported macro ------------------------------------------------------------*/
-/* Exported functions ------------------------------------------------------- */
+/* Includes ------------------------------------------------------------------*/  
 
-void NMI_Handler(void);
-void HardFault_Handler(void);
-void MemManage_Handler(void);
-void BusFault_Handler(void);
-void UsageFault_Handler(void);
-void SVC_Handler(void);
-void DebugMon_Handler(void);
-void PendSV_Handler(void);
-void SysTick_Handler(void);
+/** @addtogroup BSP
+  * @{
+  */ 
 
-void I2Cx_MASTER_DMA_RX_IRQHandler(void);
-void I2Cx_MASTER_DMA_TX_IRQHandler(void);
-void I2Cx_MASTER_EV_IRQHandler(void);
-void I2Cx_MASTER_ER_IRQHandler(void);
-void USARTx_IRQHandler(void);
+/** @addtogroup Components
+  * @{
+  */ 
+  
+/** @addtogroup rk043fn48h
+  * @{
+  */
+
+/** @defgroup RK043FN48H_Exported_Types
+  * @{
+  */
+   
+/**
+  * @}
+  */ 
+
+/** @defgroup RK043FN48H_Exported_Constants
+  * @{
+  */
+
+/** 
+  * @brief  RK043FN48H Size  
+  */     
+#define  RK043FN48H_WIDTH    ((uint16_t)480)          /* LCD PIXEL WIDTH            */
+#define  RK043FN48H_HEIGHT   ((uint16_t)272)          /* LCD PIXEL HEIGHT           */
+
+/** 
+  * @brief  RK043FN48H Timing  
+  */     
+#define  RK043FN48H_HSYNC            ((uint16_t)41)   /* Horizontal synchronization */
+#define  RK043FN48H_HBP              ((uint16_t)13)   /* Horizontal back porch      */
+#define  RK043FN48H_HFP              ((uint16_t)32)   /* Horizontal front porch     */
+#define  RK043FN48H_VSYNC            ((uint16_t)10)   /* Vertical synchronization   */
+#define  RK043FN48H_VBP              ((uint16_t)2)    /* Vertical back porch        */
+#define  RK043FN48H_VFP              ((uint16_t)2)    /* Vertical front porch       */
+
+/** 
+  * @brief  RK043FN48H frequency divider  
+  */    
+#define  RK043FN48H_FREQUENCY_DIVIDER    5            /* LCD Frequency divider      */
+/**
+  * @}
+  */
+  
+/** @defgroup RK043FN48H_Exported_Functions
+  * @{
+  */
+
+/**
+  * @}
+  */    
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* __STM32F7xx_IT_H */
+#endif /* __RK043FN48H_H */
+/**
+  * @}
+  */ 
+
+/**
+  * @}
+  */ 
+
+/**
+  * @}
+  */ 
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

@@ -1,10 +1,14 @@
 /**
   ******************************************************************************
-  * @file    stm32f7xx_it.h
-  * @brief   This file contains the headers of the interrupt handlers.
+  * @file    magneto.h
+  * @author  MCD Application Team
+  * @version V4.0.0
+  * @date    22-June-2015
+  * @brief   This header file contains the functions prototypes for the MAGNETO driver.
   ******************************************************************************
+  * @attention
   *
-  * COPYRIGHT(c) 2018 STMicroelectronics
+  * <h2><center>&copy; COPYRIGHT(c) 2015 STMicroelectronics</center></h2>
   *
   * Redistribution and use in source and binary forms, with or without modification,
   * are permitted provided that the following conditions are met:
@@ -32,40 +36,90 @@
   */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __STM32F7xx_IT_H
-#define __STM32F7xx_IT_H
+#ifndef __MAGNETO_H
+#define __MAGNETO_H
 
 #ifdef __cplusplus
  extern "C" {
-#endif 
+#endif
 
 /* Includes ------------------------------------------------------------------*/
-#include "stm32f7xx_hal.h"
-#include "main.h"
-/* Exported types ------------------------------------------------------------*/
-/* Exported constants --------------------------------------------------------*/
-/* Exported macro ------------------------------------------------------------*/
-/* Exported functions ------------------------------------------------------- */
+#include <stdint.h>
 
-void NMI_Handler(void);
-void HardFault_Handler(void);
-void MemManage_Handler(void);
-void BusFault_Handler(void);
-void UsageFault_Handler(void);
-void SVC_Handler(void);
-void DebugMon_Handler(void);
-void PendSV_Handler(void);
-void SysTick_Handler(void);
+/** @addtogroup BSP
+  * @{
+  */
 
-void I2Cx_MASTER_DMA_RX_IRQHandler(void);
-void I2Cx_MASTER_DMA_TX_IRQHandler(void);
-void I2Cx_MASTER_EV_IRQHandler(void);
-void I2Cx_MASTER_ER_IRQHandler(void);
-void USARTx_IRQHandler(void);
+/** @addtogroup Components
+  * @{
+  */
+    
+/** @addtogroup MAGNETO
+  * @{
+  */
+
+/** @defgroup MAGNETO_Exported_Types
+  * @{
+  */ 
+
+/** @defgroup MAGNETO_Config_structure  Magnetometer Configuration structure
+  * @{
+  */
+typedef struct
+{
+  uint8_t Register1;
+  uint8_t Register2;
+  uint8_t Register3;
+  uint8_t Register4;
+  uint8_t Register5;
+}MAGNETO_InitTypeDef;
+/**
+  * @}
+  */
+
+/** @defgroup MAGNETO_Driver_structure  Magnetometer Driver structure
+  * @{
+  */
+typedef struct
+{  
+  void      (*Init)(MAGNETO_InitTypeDef);
+  void      (*DeInit)(void); 
+  uint8_t   (*ReadID)(void);
+  void      (*Reset)(void);
+  void      (*LowPower)(void);
+  void      (*ConfigIT)(void);
+  void      (*EnableIT)(uint8_t);
+  void      (*DisableIT)(uint8_t);
+  uint8_t   (*ITStatus)(uint16_t);
+  void      (*ClearIT)(void);
+  void      (*FilterConfig)(uint8_t);
+  void      (*FilterCmd)(uint8_t);
+  void      (*GetXYZ)(int16_t *);
+}MAGNETO_DrvTypeDef;
+/**
+  * @}
+  */
+
+/**
+  * @}
+  */
+
+/**
+  * @}
+  */
+
+/**
+  * @}
+  */
+
+/**
+  * @}
+  */
+
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* __STM32F7xx_IT_H */
+#endif /* __MAGNETO_H */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

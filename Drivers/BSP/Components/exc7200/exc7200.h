@@ -1,10 +1,15 @@
 /**
   ******************************************************************************
-  * @file    stm32f7xx_it.h
-  * @brief   This file contains the headers of the interrupt handlers.
+  * @file    exc7200.h
+  * @author  MCD Application Team
+  * @version V1.0.0
+  * @date    28-April-2015
+  * @brief   This file contains all the functions prototypes for the
+  *          exc7200.c IO expander driver.
   ******************************************************************************
+  * @attention
   *
-  * COPYRIGHT(c) 2018 STMicroelectronics
+  * <h2><center>&copy; COPYRIGHT(c) 2015 STMicroelectronics</center></h2>
   *
   * Redistribution and use in source and binary forms, with or without modification,
   * are permitted provided that the following conditions are met:
@@ -29,43 +34,104 @@
   * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   *
   ******************************************************************************
-  */
+  */ 
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __STM32F7xx_IT_H
-#define __STM32F7xx_IT_H
+#ifndef __EXC7200_H
+#define __EXC7200_H
 
 #ifdef __cplusplus
  extern "C" {
-#endif 
-
+#endif   
+   
 /* Includes ------------------------------------------------------------------*/
-#include "stm32f7xx_hal.h"
-#include "main.h"
+#include "../Common/ts.h"
+
+/** @addtogroup BSP
+  * @{
+  */ 
+
+/** @addtogroup Component
+  * @{
+  */
+    
+/** @defgroup EXC7200
+  * @{
+  */    
+
 /* Exported types ------------------------------------------------------------*/
+
+/** @defgroup EXC7200_Exported_Types
+  * @{
+  */ 
+
 /* Exported constants --------------------------------------------------------*/
+  
+/** @defgroup EXC7200_Exported_Constants
+  * @{
+  */ 
+
+/*  */   
+#define EXC7200_READ_CMD                             0x09  
+
+/**
+  * @}
+  */ 
+  
 /* Exported macro ------------------------------------------------------------*/
-/* Exported functions ------------------------------------------------------- */
+   
+/** @defgroup exc7200_Exported_Macros
+  * @{
+  */ 
 
-void NMI_Handler(void);
-void HardFault_Handler(void);
-void MemManage_Handler(void);
-void BusFault_Handler(void);
-void UsageFault_Handler(void);
-void SVC_Handler(void);
-void DebugMon_Handler(void);
-void PendSV_Handler(void);
-void SysTick_Handler(void);
+/* Exported functions --------------------------------------------------------*/
+  
+/** @defgroup exc7200_Exported_Functions
+  * @{
+  */
 
-void I2Cx_MASTER_DMA_RX_IRQHandler(void);
-void I2Cx_MASTER_DMA_TX_IRQHandler(void);
-void I2Cx_MASTER_EV_IRQHandler(void);
-void I2Cx_MASTER_ER_IRQHandler(void);
-void USARTx_IRQHandler(void);
+/** 
+  * @brief exc7200 Control functions
+  */
+void     exc7200_Init(uint16_t DeviceAddr);
+void     exc7200_Reset(uint16_t DeviceAddr);
+uint16_t exc7200_ReadID(uint16_t DeviceAddr);
+void     exc7200_TS_Start(uint16_t DeviceAddr);
+uint8_t  exc7200_TS_DetectTouch(uint16_t DeviceAddr);
+void     exc7200_TS_GetXY(uint16_t DeviceAddr, uint16_t *X, uint16_t *Y);
+void     exc7200_TS_EnableIT(uint16_t DeviceAddr);
+void     exc7200_TS_DisableIT(uint16_t DeviceAddr);
+uint8_t  exc7200_TS_ITStatus (uint16_t DeviceAddr);
+void     exc7200_TS_ClearIT (uint16_t DeviceAddr);
+
+void     IOE_Init(void);
+void     IOE_Delay(uint32_t delay);
+uint8_t  IOE_Read(uint8_t addr, uint8_t reg);
+uint16_t IOE_ReadMultiple(uint8_t addr, uint8_t reg, uint8_t *buffer, uint16_t length);
+void     IOE_WriteMultiple(uint8_t addr, uint8_t reg, uint8_t *buffer, uint16_t length);
+
+/* Touch screen driver structure */
+extern TS_DrvTypeDef exc7200_ts_drv;
+
 #ifdef __cplusplus
 }
 #endif
+#endif /* __EXC7200_H */
 
-#endif /* __STM32F7xx_IT_H */
 
+/**
+  * @}
+  */ 
+
+/**
+  * @}
+  */
+
+/**
+  * @}
+  */ 
+
+/**
+  * @}
+  */       
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

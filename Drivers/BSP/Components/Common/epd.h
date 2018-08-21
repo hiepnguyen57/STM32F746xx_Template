@@ -1,10 +1,15 @@
 /**
   ******************************************************************************
-  * @file    stm32f7xx_it.h
-  * @brief   This file contains the headers of the interrupt handlers.
+  * @file    epd.h
+  * @author  MCD Application Team
+  * @version V4.0.0
+  * @date    22-June-2015
+  * @brief   This file contains all the functions prototypes for the 
+  *          EPD (E Paper Display) driver.   
   ******************************************************************************
+  * @attention
   *
-  * COPYRIGHT(c) 2018 STMicroelectronics
+  * <h2><center>&copy; COPYRIGHT(c) 2015 STMicroelectronics</center></h2>
   *
   * Redistribution and use in source and binary forms, with or without modification,
   * are permitted provided that the following conditions are met:
@@ -29,43 +34,82 @@
   * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   *
   ******************************************************************************
-  */
+  */ 
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __STM32F7xx_IT_H
-#define __STM32F7xx_IT_H
+#ifndef __EPD_H
+#define __EPD_H
 
 #ifdef __cplusplus
  extern "C" {
-#endif 
+#endif
 
 /* Includes ------------------------------------------------------------------*/
-#include "stm32f7xx_hal.h"
-#include "main.h"
-/* Exported types ------------------------------------------------------------*/
-/* Exported constants --------------------------------------------------------*/
-/* Exported macro ------------------------------------------------------------*/
-/* Exported functions ------------------------------------------------------- */
+#include <stdint.h>
 
-void NMI_Handler(void);
-void HardFault_Handler(void);
-void MemManage_Handler(void);
-void BusFault_Handler(void);
-void UsageFault_Handler(void);
-void SVC_Handler(void);
-void DebugMon_Handler(void);
-void PendSV_Handler(void);
-void SysTick_Handler(void);
+/** @addtogroup BSP
+  * @{
+  */
 
-void I2Cx_MASTER_DMA_RX_IRQHandler(void);
-void I2Cx_MASTER_DMA_TX_IRQHandler(void);
-void I2Cx_MASTER_EV_IRQHandler(void);
-void I2Cx_MASTER_ER_IRQHandler(void);
-void USARTx_IRQHandler(void);
+/** @addtogroup Components
+  * @{
+  */
+  
+/** @addtogroup Common
+  * @{
+  */
+
+/** @addtogroup EPD
+  * @{
+  */
+
+/** @defgroup EPD_Exported_Types
+  * @{
+  */
+
+/** @defgroup EPD_Driver_structure  E Paper Display Driver structure
+  * @{
+  */
+typedef struct
+{
+  void     (*Init)(void);
+  void     (*WritePixel)(uint8_t);
+
+  /* Optimized operation */
+  void     (*SetDisplayWindow)(uint16_t, uint16_t, uint16_t, uint16_t);
+  void     (*RefreshDisplay)(void);
+  void     (*CloseChargePump)(void);
+
+  uint16_t (*GetEpdPixelWidth)(void);
+  uint16_t (*GetEpdPixelHeight)(void);
+  void     (*DrawImage)(uint16_t, uint16_t, uint16_t, uint16_t, uint8_t*);
+}
+EPD_DrvTypeDef;
+/**
+  * @}
+  */
+
+/**
+  * @}
+  */
+
+/**
+  * @}
+  */
+
+/**
+  * @}
+  */
+
+/**
+  * @}
+  */
+
+
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* __STM32F7xx_IT_H */
+#endif /* EPD_H */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

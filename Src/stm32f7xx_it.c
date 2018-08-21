@@ -41,7 +41,7 @@
 
 /* External variables --------------------------------------------------------*/
 extern UART_HandleTypeDef huart1;
-
+extern I2C_HandleTypeDef hi2c1;
 /******************************************************************************/
 /*            Cortex-M7 Processor Interruption and Exception Handlers         */ 
 /******************************************************************************/
@@ -179,7 +179,7 @@ void SysTick_Handler(void)
 
   /* USER CODE END SysTick_IRQn 0 */
   HAL_IncTick();
-  HAL_SYSTICK_IRQHandler();
+//  HAL_SYSTICK_IRQHandler();
   /* USER CODE BEGIN SysTick_IRQn 1 */
 
   /* USER CODE END SysTick_IRQn 1 */
@@ -203,6 +203,51 @@ void USARTx_IRQHandler(void)
   HAL_UART_IRQHandler(&huart1);
 }
 
+/**
+  * @brief  This function handles DMA interrupt request.
+  * @param  None
+  * @retval None
+  * @Note   This function is redefined in "main.h" and related to DMA Channel 
+  *         used for I2C data transmission     
+  */
+void I2Cx_MASTER_DMA_RX_IRQHandler(void)
+{
+  HAL_DMA_IRQHandler(hi2c1.hdmarx);
+}
+
+/**
+  * @brief  This function handles DMA interrupt request.
+  * @param  None
+  * @retval None
+  * @Note   This function is redefined in "main.h" and related to DMA Channel 
+  *         used for I2C data reception    
+  */
+void I2Cx_MASTER_DMA_TX_IRQHandler(void)
+{
+  HAL_DMA_IRQHandler(hi2c1.hdmatx);
+}
+/**
+  * @brief  This function handles I2C event interrupt request.
+  * @param  None
+  * @retval None
+  * @Note   This function is redefined in "main.h" and related to I2C data transmission
+  */
+void I2Cx_MASTER_EV_IRQHandler(void)
+{
+  printf("I2C INT EVENT\r\n");
+  HAL_I2C_EV_IRQHandler(&hi2c1);
+}
+
+/**
+  * @brief  This function handles I2C error interrupt request.
+  * @param  None
+  * @retval None
+  * @Note   This function is redefined in "main.h" and related to I2C error
+  */
+void I2Cx_MASTER_ER_IRQHandler(void)
+{
+  HAL_I2C_ER_IRQHandler(&hi2c1);
+}
 /* USER CODE BEGIN 1 */
 
 /* USER CODE END 1 */

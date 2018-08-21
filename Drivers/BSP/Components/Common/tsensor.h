@@ -1,10 +1,15 @@
 /**
   ******************************************************************************
-  * @file    stm32f7xx_it.h
-  * @brief   This file contains the headers of the interrupt handlers.
+  * @file    tsensor.h
+  * @author  MCD Application Team
+  * @version V4.0.0
+  * @date    22-June-2015
+  * @brief   This header file contains the functions prototypes for the
+  *          Temperature Sensor driver. 
   ******************************************************************************
+  * @attention
   *
-  * COPYRIGHT(c) 2018 STMicroelectronics
+  * <h2><center>&copy; COPYRIGHT(c) 2015 STMicroelectronics</center></h2>
   *
   * Redistribution and use in source and binary forms, with or without modification,
   * are permitted provided that the following conditions are met:
@@ -32,40 +37,82 @@
   */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __STM32F7xx_IT_H
-#define __STM32F7xx_IT_H
+#ifndef __TSENSOR_H
+#define __TSENSOR_H
 
 #ifdef __cplusplus
  extern "C" {
-#endif 
+#endif
 
 /* Includes ------------------------------------------------------------------*/
-#include "stm32f7xx_hal.h"
-#include "main.h"
-/* Exported types ------------------------------------------------------------*/
-/* Exported constants --------------------------------------------------------*/
-/* Exported macro ------------------------------------------------------------*/
-/* Exported functions ------------------------------------------------------- */
+#include <stdint.h>
 
-void NMI_Handler(void);
-void HardFault_Handler(void);
-void MemManage_Handler(void);
-void BusFault_Handler(void);
-void UsageFault_Handler(void);
-void SVC_Handler(void);
-void DebugMon_Handler(void);
-void PendSV_Handler(void);
-void SysTick_Handler(void);
+/** @addtogroup BSP
+  * @{
+  */
 
-void I2Cx_MASTER_DMA_RX_IRQHandler(void);
-void I2Cx_MASTER_DMA_TX_IRQHandler(void);
-void I2Cx_MASTER_EV_IRQHandler(void);
-void I2Cx_MASTER_ER_IRQHandler(void);
-void USARTx_IRQHandler(void);
+/** @addtogroup Components
+  * @{
+  */
+    
+/** @addtogroup TSENSOR
+  * @{
+  */
+
+/** @defgroup TSENSOR_Exported_Types
+  * @{
+  */ 
+
+/** @defgroup TSENSOR_Driver_structure  Temperature Sensor Driver structure
+  * @{
+  */
+typedef struct
+{  
+  void       (*Init)(uint16_t, TSENSOR_InitTypeDef *);
+  uint8_t    (*IsReady)(uint16_t, uint32_t);
+  uint8_t    (*ReadStatus)(uint16_t);
+  uint16_t   (*ReadTemp)(uint16_t); 
+}TSENSOR_DrvTypeDef;
+/**
+  * @}
+  */
+
+/** @defgroup TSENSOR_Config_structure  Temperature Sensor Configuration structure
+  * @{
+  */
+typedef struct
+{
+  uint8_t AlertMode;            /* Alert Mode Temperature out of range*/
+  uint8_t ConversionMode;       /* Continuous/One Shot Mode */
+  uint8_t ConversionResolution; /* Temperature Resolution */
+  uint8_t ConversionRate;       /* Number of measure per second */
+  uint8_t TemperatureLimitHigh; /* High Temperature Limit Range */
+  uint8_t TemperatureLimitLow;  /* Low Temperature Limit Range */
+}TSENSOR_InitTypeDef;
+/**
+  * @}
+  */
+
+/**
+  * @}
+  */
+
+/**
+  * @}
+  */
+
+/**
+  * @}
+  */
+
+/**
+  * @}
+  */
+
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* __STM32F7xx_IT_H */
+#endif /* __TSENSOR_H */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

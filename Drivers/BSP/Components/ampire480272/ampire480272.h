@@ -1,10 +1,15 @@
 /**
   ******************************************************************************
-  * @file    stm32f7xx_it.h
-  * @brief   This file contains the headers of the interrupt handlers.
+  * @file    ampire480272.h
+  * @author  MCD Application Team
+  * @version V1.0.0
+  * @date    18-February-2014
+  * @brief   This file contains all the constants parameters for the ampire480272
+  *          LCD component.
   ******************************************************************************
+  * @attention
   *
-  * COPYRIGHT(c) 2018 STMicroelectronics
+  * <h2><center>&copy; COPYRIGHT(c) 2014 STMicroelectronics</center></h2>
   *
   * Redistribution and use in source and binary forms, with or without modification,
   * are permitted provided that the following conditions are met:
@@ -29,43 +34,88 @@
   * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   *
   ******************************************************************************
-  */
+  */ 
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __STM32F7xx_IT_H
-#define __STM32F7xx_IT_H
+#ifndef __AMPIRE480272_H
+#define __AMPIRE480272_H
 
 #ifdef __cplusplus
  extern "C" {
 #endif 
 
-/* Includes ------------------------------------------------------------------*/
-#include "stm32f7xx_hal.h"
-#include "main.h"
-/* Exported types ------------------------------------------------------------*/
-/* Exported constants --------------------------------------------------------*/
-/* Exported macro ------------------------------------------------------------*/
-/* Exported functions ------------------------------------------------------- */
+/* Includes ------------------------------------------------------------------*/  
 
-void NMI_Handler(void);
-void HardFault_Handler(void);
-void MemManage_Handler(void);
-void BusFault_Handler(void);
-void UsageFault_Handler(void);
-void SVC_Handler(void);
-void DebugMon_Handler(void);
-void PendSV_Handler(void);
-void SysTick_Handler(void);
+/** @addtogroup BSP
+  * @{
+  */ 
 
-void I2Cx_MASTER_DMA_RX_IRQHandler(void);
-void I2Cx_MASTER_DMA_TX_IRQHandler(void);
-void I2Cx_MASTER_EV_IRQHandler(void);
-void I2Cx_MASTER_ER_IRQHandler(void);
-void USARTx_IRQHandler(void);
+/** @addtogroup Components
+  * @{
+  */ 
+  
+/** @addtogroup ampire480272
+  * @{
+  */
+
+/** @defgroup AMPIRE480272_Exported_Types
+  * @{
+  */
+   
+/**
+  * @}
+  */ 
+
+/** @defgroup AMPIRE480272_Exported_Constants
+  * @{
+  */
+  
+/** 
+  * @brief  AMPIRE480272 Size  
+  */     
+#define  AMPIRE480272_WIDTH    ((uint16_t)480)          /* LCD PIXEL WIDTH            */
+#define  AMPIRE480272_HEIGHT   ((uint16_t)272)          /* LCD PIXEL HEIGHT           */
+
+/** 
+  * @brief  AMPIRE480272 Timing  
+  */     
+#define  AMPIRE480272_HSYNC            ((uint16_t)41)   /* Horizontal synchronization */
+#define  AMPIRE480272_HBP              ((uint16_t)2)    /* Horizontal back porch      */ 
+#define  AMPIRE480272_HFP              ((uint16_t)2)    /* Horizontal front porch     */
+#define  AMPIRE480272_VSYNC            ((uint16_t)10)   /* Vertical synchronization   */
+#define  AMPIRE480272_VBP              ((uint16_t)2)    /* Vertical back porch        */
+#define  AMPIRE480272_VFP              ((uint16_t)2)    /* Vertical front porch       */
+
+/** 
+  * @brief  AMPIRE480272 frequency divider  
+  */    
+#define  AMPIRE480272_FREQUENCY_DIVIDER    5            /* LCD Frequency divider      */
+/**
+  * @}
+  */
+  
+/** @defgroup AMPIRE480272_Exported_Functions
+  * @{
+  */    
+
+/**
+  * @}
+  */    
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* __STM32F7xx_IT_H */
+#endif /* __AMPIRE480272_H */
+/**
+  * @}
+  */ 
+
+/**
+  * @}
+  */ 
+
+/**
+  * @}
+  */ 
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

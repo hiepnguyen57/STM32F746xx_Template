@@ -14,7 +14,7 @@
 # target
 ######################################
 TARGET = STM32F746NG_Template
-
+ST-FLASH = st-flash
 
 ######################################
 # building variables
@@ -55,6 +55,7 @@ Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_pwr_ex.c \
 Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal.c \
 Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_i2c.c \
 Drivers/STM32F7xx_HAL_Driver/Src/stm32f7xx_hal_i2c_ex.c \
+Drivers/BSP/STM32746G-Discovery/stm32746g_discovery.c \
 Src/system_stm32f7xx.c  
 
 # ASM sources
@@ -106,7 +107,9 @@ C_DEFS =  \
 -DUSE_HAL_DRIVER \
 -DSTM32F746xx \
 -DARM_MATH_CM7 \
--D__FPU_PRESENT 
+-D__FPU_PRESENT \
+-DUSE_IOEXPANDER \
+-DUSE_STM32746G_DISCO
 
 # AS includes
 AS_INCLUDES = 
@@ -117,7 +120,8 @@ C_INCLUDES =  \
 -IDrivers/STM32F7xx_HAL_Driver/Inc \
 -IDrivers/STM32F7xx_HAL_Driver/Inc/Legacy \
 -IDrivers/CMSIS/Device/ST/STM32F7xx/Include \
--IDrivers/CMSIS/Include
+-IDrivers/CMSIS/Include \
+-IDrivers/BSP/STM32746G-Discovery \
 
 
 # compile gcc flags
@@ -184,7 +188,12 @@ $(BUILD_DIR):
 #######################################
 clean:
 	-rm -fR $(BUILD_DIR)
-  
+
+#######################################
+# flash into internal flash
+#######################################
+flash:
+	$(ST-FLASH) write $(BUILD_DIR)/$(TARGET).bin 0x08000000
 #######################################
 # dependencies
 #######################################
